@@ -23,7 +23,7 @@
 //	Check to stop remote users from killing the daemon via API
 	if ($request[0] == "stop")
 	{
-		bcapi_error (6, "You can't stop us");
+		bcapi_error (6, "You can't stop me!");
 	}	
 
 /*	

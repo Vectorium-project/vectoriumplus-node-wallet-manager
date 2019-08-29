@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="css/pure-min.css">
   <link rel="stylesheet" href="css/flags.css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="60">
   <meta charset="UTF-8">
   <!--[if lte IE 8]>
     <link rel="stylesheet" href="css/grids-responsive-old-ie-min.css">
@@ -88,16 +89,30 @@
 
   <div class="pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 image">
     <?php
-      if (($config['display_donation_text'] === TRUE) && ($config['donation_address'] !== 'not_set')) {	
-	echo "<h1> Balance: ". $config['node_balance'] ." VCTP</h1>";
+      if (($config['display_donation_text'] === TRUE) && ($config['donation_address'] !== 'not_set')) {		
+	echo "<h1> Total Balance: ". number_format($total_balance,3) ." VCTP</h1>";
+	echo "<h1> Free Balance: ". number_format($config['node_balance'],3) ." VCTP</h1>";
+	echo "<h1> Staking: ". number_format($config['node_currently_at_stake'],3)." VCTP</h1>";
 	echo "<center>";
+	?>
+        <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>"> 	 
+  	 <input type="submit" name="toggle_staking" value="<?php echo $config['node_staking_enabled']; ?>"><br>	 
+        </form>
+	<?php
+	if(isset($_POST['toggle_staking'])){ 
+	    echo "pressed";	   
+	}
+	?>
+	<?php	
 	echo "<h3>Staking report </h3>";
-	echo "<h4> 24h: ". $config['$node_stake_24h'] ." VCTP</h4>";
-	echo "<h4> 7d: ". $config['$node_stake_7d'] ." VCTP</h4>";
-	echo "<h4> 30d: ". $config['$node_stake_30d'] ." VCTP</h4>";
-	echo "<h4> 365d: ". $config['$node_stake_365d'] ." VCTP</h4>";
+	echo "<b> 24h:</b> ". number_format($config['node_stake_24h'],3) ." VCTP<br>";
+	echo "<b> 7d:</b> ". number_format($config['node_stake_7d'],3) ." VCTP<br>";
+	echo "<b> 30d:</b> ". number_format($config['node_stake_30d'],3) ." VCTP<br>";
+	echo "<b> 365d:</b> ". number_format($config['node_stake_365d'],3) ." VCTP<br><br>";
+	echo "<b> My weight: <font color='green'>". $config['node_staking_weight'] ."</font> - </b>";
+	echo "<b> Network weight: <font color='blue'>". $config['node_network_weight'] ."</font></b>";
 	echo "</center>";
-        echo '<p class="donation">' . "This is your node receiving address <a href='http://explorerplus.vectorium.co/address/" . $config['donation_address'] . "' target='_blank'>" . $config['donation_address'] . "</a></p>";
+        echo '<p class="donation">' . "Node receiving address (may changes overtime) <br> <a href='http://explorerplus.vectorium.co/address/" . $config['donation_address'] . "' target='_blank'>" . $config['donation_address'] . "</a></p>";
       }
     ?>
     <?php if (strcmp($config['donation_address'],'not_set') == 0){ echo '<img src="img/logo.png" alt="Vectorium Plus Logo" class="logo" />'; } else { echo generateDonationImage(); } ?>
@@ -132,8 +147,13 @@
       <p class="stat"><span class="label">Network Height:</span> <?php echo $data['max_height']; ?></p>
 <?php } ?>
       <p class="stat"><span class="label">Difficulty:</span> <?php echo number_format($data['difficulty'],8); ?></p>
+      <?php $get_difficulty = "http://127.0.0.1/api.php?request=" . urlencode('getdifficulty');
+      $json_difficulty_data = json_decode(file_get_contents_curl($get_difficulty), TRUE);
+      $pos_difficulty = $json_difficulty_data["proof-of-stake"];?>
+      <p class="stat"><span class="label">PoW Difficulty:</span> <?php echo number_format($data['difficulty'],8); ?></p>
+      <p class="stat"><span class="label">PoS Difficulty:</span> <?php echo number_format($pos_difficulty,8); ?></p>
 <?php if (isset($config['display_testnet']) && $config['display_testnet']) { ?>
-      <p class="stat"><span class="label">Testnet:</span> <?php echo ($data['chain'] == "test") ? "Yes" : "No"; ?></p>
+      <p class="stat"><span class="label">Testnet:</span> <?php echo ($data['chain'] == "test") ? "Yes" : "No"; ?></p>      
 <?php } ?>
 <?php if (isset($config['display_ip']) && $config['display_ip']) { ?>
       <p class="stat"><span class="label">Node IP Address:</span> <?php echo $data['node_ip']; ?></p>
@@ -192,10 +212,48 @@
 		}	   
 	}
       ?>
+      <br>
+      <h3>Last 10 wallet transactions</h3>
+      <div id="txtable">
+	<table class="pure-table-striped pure-table-bordered sortable" style="margin: 0px auto">
+         <thead>
+           <tr>             
+             <th></th>
+             <th>Txid</th>
+	     <th>Time</th>
+             <th>Conf</th>
+             <th>Amount</th>
+           </tr>
+         </thead>
+         <tbody>           
+	   <?php
+		$get_transactions_list = "http://127.0.0.1/api.php?request=" . urlencode("listtransactions");			
+	  	$list = file_get_contents_curl($get_transactions_list);
+		$list = json_decode($list, TRUE);	
+		$list = array_reverse($list,TRUE);
+		   foreach ($list as $line){
 
+		      //check category type
+		      if($line['category'] == 'send'){$category_icon = '<img width=25 height=25 src="http://icons.iconarchive.com/icons/graphicloads/colorful-long-shadow/128/Arrow-upload-icon.png">'; $td_color='#F1948A';}
+		      if($line['category'] == 'receive'){$category_icon = '<img width=25 height=25 src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Actions-mail-receive-icon.png">'; $td_color='#ABEBC6';}			
+		      if($line['category'] == 'generate'){$category_icon = '<img width=25 height=25 src="https://image.flaticon.com/icons/png/512/663/663361.png">'; $td_color='#3498DB';}
+		      if($line['category'] == 'immature'){$category_icon = '<img width=25 height=25 src="https://freeiconshop.com/wp-content/uploads/edd/clock-outline-filled.png">'; $td_color='#3498DB';}
+		      
+
+			
+		      echo '<tr><td>'. $category_icon .'</td>';
+		      echo '<td style="word-break: break-all;"><a href="http://explorerplus.vectorium.co/tx/'. $line['txid'] .'">'. $line['txid'] .'</a></td>';
+		      echo '<td>'. date('d/m/Y H:i:s',$line['blocktime']) .'</td>';
+		      echo '<td>'. $line['confirmations'] .'</td>';
+		      echo '<td style="text-align=center; background-color:'.$td_color.'">'. number_format($line['amount'],3) .' VCTP</td></tr>';
+		   }
+		
+	   ?> 
+         </tbody>
+       </table>
+      </div>
       <h3>Connected Peers <span class="small">[<a id="peerslink" onclick="showHidePeers()" href="javascript:void(0);">Hide</a>]</span></h3>
       <div id="peerstable">
-      <p><span class="small">Click on a column header to sort the table:</span></p>
       <table class="pure-table-striped pure-table-bordered sortable" style="margin: 0px auto">
          <thead>
            <tr>

@@ -28,22 +28,47 @@ function file_get_contents_curl($url) {
     return $data;
 }
 
-$get_receiving_address = "http://127.0.0.1/api.php?request=" . urlencode('getaccountaddress ""');
-$node_address = str_replace('"', '',file_get_contents_curl($get_receiving_address));
-
 $get_balance = "http://127.0.0.1/api.php?request=" . urlencode('getbalance');
 $node_balance = file_get_contents_curl($get_balance);
 
+$get_info = "http://127.0.0.1/api.php?request=" . urlencode('getinfo');
+$json_info_data = json_decode(file_get_contents_curl($get_info), TRUE);
+$staking = $json_info_data["stake"];
+$wallet_protocol = $json_info_data["protocolversion"];
+$total_balance = $node_balance + $staking;
+
+$get_difficulty = "http://127.0.0.1/api.php?request=" . urlencode('getdifficulty');
+$json_difficulty_data = json_decode(file_get_contents_curl($get_difficulty), TRUE);
+$pos_difficulty = $json_difficulty_data["proof-of-stake"];
+
+$get_receiving_address = "http://127.0.0.1/api.php?request=" . urlencode('getaccountaddress ""');
+$node_address = str_replace('"', '',file_get_contents_curl($get_receiving_address));
+
 $get_staking_report = "http://127.0.0.1/api.php?request=" . urlencode('getstakereport');
 $json_staking = file_get_contents_curl($get_staking_report);
-$json_staking_data = json_decode($json_staking,true);
+$json_staking_data = json_decode($json_staking,TRUE);
 $stake_24h = $json_staking_data["Last 24H"];
 $stake_7d = $json_staking_data["Last 7 Days"];
 $stake_30d = $json_staking_data["Last 30 Days"];
 $stake_365d = $json_staking_data["Last 365 Days"];
 
-//MASTER CONFIGURATION ARRAY
+$get_staking_info = "http://127.0.0.1/api.php?request=" . urlencode('getstakinginfo');
+$json_staking_info_data = json_decode(file_get_contents_curl($get_staking_info), TRUE);
 
+$staking_weight = $json_staking_info_data["weight"];
+$staking_weight_network = $json_staking_info_data["netstakeweight"];
+
+$staking_enabled = $json_staking_info_data["enabled"];
+if ($staking_enabled == true){
+   //staking enabled, ask for disable
+   $staking_enabled = "DISABLE STAKING";
+}else{
+   //staking disabled, ask for enabling
+   $staking_enabled = "ENABLE STAKING";	
+}
+
+
+//MASTER CONFIGURATION ARRAY
 
 $config = array(
   // RPC
@@ -57,10 +82,17 @@ $config = array(
   // WALLET DATA AND STAKING STATUS
 
   'node_balance'  	      => $node_balance,
+  'total_balance'  	      => $total_balance,
+  'node_protocol'  	      => $wallet_protocol,
+  'pos_difficulty'  	      => $pos_difficulty,  
+  'node_staking_enabled'      => $staking_enabled,
   'node_stake_24h'  	      => $stake_24h,
   'node_stake_7d'  	      => $stake_7d,
   'node_stake_30d'  	      => $stake_30d,	
-  'node_stake_365d'  	      => $stake_365d,	
+  'node_stake_365d'  	      => $stake_365d,
+  'node_staking_weight'       => $staking_weight,	
+  'node_network_weight'       => $staking_weight_network,		
+  'node_currently_at_stake'   => $staking,
 
   // Donations
   'display_donation_text'     => true,

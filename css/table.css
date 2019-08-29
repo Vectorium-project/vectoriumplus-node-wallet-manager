@@ -38,7 +38,7 @@
   }
 
   /* Label the data */
-  td:nth-of-type(1):before { content: "IP"; }
+  #t01td:nth-of-type(1):before { content: "IP"; }
   td:nth-of-type(2):before { content: "Time Connected"; }
   td:nth-of-type(3):before { content: "Protocol Version"; }
   td:nth-of-type(4):before { content: "Last Send"; }

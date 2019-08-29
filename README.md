@@ -1,6 +1,8 @@
-# Vectorium Plusd-status
+# bitcoind-status
 
-This is a small PHP application designed to display status and information from your personal Vectorium Plus node/staking wallet.
+[![Travis CI Status](https://travis-ci.org/craigwatson/bitcoind-status.svg?branch=master)](https://travis-ci.org/craigwatson/bitcoind-status)
+
+This is a small PHP application designed to display status and information from the Bitcoin node daemon.
 
 #### Table of Contents
 
@@ -14,9 +16,9 @@ This is a small PHP application designed to display status and information from 
 
 To run the application, you will need:
 
-  * A Vec node with RPC enabled.
+  * A Bitcoin node with RPC enabled.
   * A web-server with PHP installed.
-  * The PHP `curl` module - this is used to make RPC calls to the Vectorium Plus daemon.
+  * The PHP `curl` module - this is used to make RPC calls to the Bitcoin daemon.
 
 ### PHP Support
 
@@ -46,8 +48,26 @@ Below are two example `crontab` entries to call the scripts every five minutes v
 */5 *  *   *   *  curl -Ssk http://127.0.0.1/peercount.php > /dev/null
 
 #Run over php cgi
-*/5 *  *   *   *  cd /var/www/ && /usr/bin/php stats.php > /dev/null
-*/5 *  *   *   *  cd /var/www/ && /usr/bin/php peercount.php > /dev/null
+*/5 *  *   *   *  cd /var/www/bitnodes/ && /usr/bin/php stats.php > /dev/null
+*/5 *  *   *   *  cd /var/www/bitnodes/ && /usr/bin/php peercount.php > /dev/null
+```
+
+## Node Profile Icons
+
+To configure profile icons for your node, just set them up using the `node_links` variable in `config.php`. The format is a multi-dimensional array, as
+below. Icon images for Bitnodes.21.co and Blockchain.info are included in the `img` directory.
+
+```
+    'node_links' => array (
+        array (
+            'name' => 'bitnodes.earn.com',
+            'image'=> 'img/bitnodes.earn.com.png',
+            'link' => 'https://bitnodes.earn.com/nodes/[IP]-[PORT]/'
+        ),
+        array (
+            ...
+        )
+    ),
 ```
 
 ## Ignoring Certain Peers
@@ -63,9 +83,16 @@ To ignore any specific peer from appearing in the connections table. Write the I
 
 ## Peer Count Nodes
 
-The node count script automatically counts Core, Classic, Unlimited and Vectorium PlusJ clients. To add more node types to the chart, simply add an entry into the `peercount_extra_nodes` array in `config.php`.
+The node count script automatically counts Core, Classic, Unlimited and BitcoinJ clients. To add more node types to the chart, simply add an entry into the `peercount_extra_nodes` array in `config.php`.
 
 The key of the entry is an internal-only identifier, and the value is the lower-case text that should be matched in order to increment the counter.
+
+## Contributing
+
+Contributions and testing reports are extremely welcome. Please submit a pull request or issue on [GitHub](https://github.com/craigwatson/bitcoind-status), and make sure
+that your code conforms to the PEAR PHP coding standards (Travis CI will test your pull request when it's sent).
+
+I accept tips via Bitcoin to 1N73BsKN2bubvRo9dXbUjwe4SBHW4j4j4B - if you would like to buy me a beer, please do!
 
 ## Advanced Options
 
@@ -87,7 +114,7 @@ The `config.php` file also contains lots of options to control how the applicati
 | Value                   | Type    | Default   | Explanation                                 |
 |-------------------------|---------|-----------|---------------------------------------------|
 | `display_donation_text` | Boolean | `false`    | Display text to encourage donations        |
-| `donation_address`      | String  | `not_set` | Vectorium Plus address to advertise for donations  |
+| `donation_address`      | String  | `not_set` | Bitcoin address to advertise for donations  |
 | `donation_amount`       | String  | `0.001`   | Donation amount - not currently implemented |
 
 ### Peers
@@ -105,10 +132,10 @@ The `config.php` file also contains lots of options to control how the applicati
 | Value               | Type    | Default                               | Explanation                                                          |
 |---------------------|---------|---------------------------------------|----------------------------------------------------------------------|
 | `cache_geo_data`    | Boolean | `true`                                | Enables caching of geolocation data                                  |
-| `geo_cache_file`    | String  | `/var/tmp/Vectorium Plusd-geolocation.cache` | File location for the geolocation cache                              |
+| `geo_cache_file`    | String  | `/var/tmp/bitcoind-geolocation.cache` | File location for the geolocation cache                              |
 | `geo_cache_time`    | Int     | `604800`                              | Time in seconds until geolocation cache expires - defaults to 7 days |
 | `use_cache`         | Boolean | `true`                                | Enable cache                                                         |
-| `cache_file`        | String  | `/tmp/Vectorium Plusd-status.cache`          | File location to write to for cache                                  |
+| `cache_file`        | String  | `/tmp/bitcoind-status.cache`          | File location to write to for cache                                  |
 | `max_cache_time`    | Int     | `300`                                 | Expiry time for cache                                                |
 | `nocache_whitelist` | Array   | `array('127.0.0.1')`                  | The IP addresses that are allowed to bypass or clear cache           |
 
@@ -126,12 +153,12 @@ The `config.php` file also contains lots of options to control how the applicati
 | `display_ip`               | Boolean | `false`               | Display the server IP address                                                                      |
 | `display_free_disk_space`  | Boolean | `false`               | Displayfree disk space                                                                             |
 | `display_testnet`          | Boolean | `false`               | Display testnet status                                                                             |
-| `display_version`          | Boolean | `true`                | Display node `Vectorium Plusd` version                                                                    |
+| `display_version`          | Boolean | `true`                | Display node `bitcoind` version                                                                    |
 | `display_github_ribbon`    | Boolean | `true`                | Displays the 'Fork me on GitHub' ribbon                                                            |
 | `display_max_height`       | Boolean | `false`               | Displays the node height as a percentage of network height                                         |
-| `use_vct_ip`               | Boolean | `true`                | Use the Vectorium Plus daemon to get the public IP, instead of `$_SERVER`                                 |
+| `use_bitcoind_ip`          | Boolean | `true`                | Use the Bitcoin daemon to get the public IP, instead of `$_SERVER`                                 |
 | `intro_text`               | String  | `not_set`             | Introductory text to display above the node statistics.                                            |
-| `title_text`               | String  | `Node Status`         | Value to display for the web browser title and main heading                                        |
+| `title_text`               | String  | `Bitcoin Node Status` | Value to display for the web browser title and main heading                                        |
 | `display_bitnodes_info`    | Boolean | `false`               | Displays various information via the bitnodes.21.co API                                            |
 | `display_chart`            | Boolean | `false`               | Displays a chart showing the stats collected by the stats.php script                               |
 | `display_peer_chart`       | Boolean | `false`               | Displays a chart showing the mix of node versions connected to your node                           |
@@ -142,7 +169,7 @@ The `config.php` file also contains lots of options to control how the applicati
 | Value                   | Type   | Default                     | Explanation                                            |
 |-------------------------|--------|-----------------------------|--------------------------------------------------------|
 | `stats_whitelist`       | Array  | `array('127.0.0.1')`        | Hosts that can run the stats script                    |
-| `stats_file`            | String | `/tmp/Vectorium Plusd-status.data` | File to store stats                                    |
+| `stats_file`            | String | `/tmp/bitcoind-status.data` | File to store stats                                    |
 | `stats_max_age`         | String | `604800`                    | Maximum age for stats                                  |
 | `stats_min_data_points` | Int    | `5`                         | Minimum data points to collect before displaying chart |
 
@@ -151,7 +178,7 @@ The `config.php` file also contains lots of options to control how the applicati
 | Value                       | Type    | Default                     | Explanation                                                  |
 |-----------------------------|---------|-----------------------------|--------------------------------------------------------------|
 | `peercount_whitelist`       | Array   | `array('127.0.0.1')`        | Hosts that can run the host-count script                     |
-| `peercount_file`            | String  | `/tmp/Vectorium Plusd-peers.data`  | File to store host-count                                     |
+| `peercount_file`            | String  | `/tmp/bitcoind-peers.data`  | File to store host-count                                     |
 | `peercount_max_age`         | String  | `604800`                    | Maximum age for host-count                                   |
 | `peercount_min_data_points` | Int     | `5`                         | Minimum data points to collect before displaying chart       |
 | `peercount_extra_nodes`     | Array   | `array()`                   | Key-Value array of extra node types to count (value = regex) |
@@ -160,8 +187,8 @@ The `config.php` file also contains lots of options to control how the applicati
 
 | Value                     | Type    | Default    | Explanation                                                 |
 |---------------------------|---------|------------|-------------------------------------------------------------|
-| `display_Vectorium Plusd_uptime` | Boolean | `true`     | Displays the uptime of the Vectorium Plus daemon                   |
-| `Vectorium Plusd_process_name`   | String  | `Vectorium Plusd` | Name to use when getting the Vectorium Plus daemon process' uptime |
+| `display_bitcoind_uptime` | Boolean | `true`     | Displays the uptime of the Bitcoin daemon                   |
+| `bitcoind_process_name`   | String  | `bitcoind` | Name to use when getting the bitcoin daemon process' uptime |
 
 ### System
 
@@ -180,6 +207,5 @@ The `config.php` file also contains lots of options to control how the applicati
 ## Licensing
 
 * Copyright (C) 2015 [Craig Watson](http://www.cwatson.org)
-* Copyright (C) 2019 [Vectorium Project](http://www.vectorium.co)
-* Distributed under the terms of the [Apache License v2.0](http://www.apache.org/licenses/LICENSE-2.0) - see [LICENSE file](https://github.com/craigwatson/Vectorium Plusd-status/blob/master/LICENSE) for details.
-* [EasyBitcoin-PHP library](https://github.com/aceat64/EasyBitcoinPHP) is reproduced under the terms of the [MIT licence](http://opensource.org/licenses/MIT) and is used from commit [ff67be76](https://github.com/aceat64/EasyBitcoin-PHP/tree/ff67be76a9109beba2ec5f684d646c6f3a3e9792).
+* Distributed under the terms of the [Apache License v2.0](http://www.apache.org/licenses/LICENSE-2.0) - see [LICENSE file](https://github.com/craigwatson/bitcoind-status/blob/master/LICENSE) for details.
+* [EasyBitcoin-PHP library](https://github.com/aceat64/EasyBitcoin-PHP) is reproduced under the terms of the [MIT licence](http://opensource.org/licenses/MIT) and is used from commit [ff67be76](https://github.com/aceat64/EasyBitcoin-PHP/tree/ff67be76a9109beba2ec5f684d646c6f3a3e9792).

@@ -10,10 +10,14 @@
 
 //	URL formatting is stripped from the request
 	$request = urldecode ($_REQUEST["request"]);
-	
+
 //	The request is split in case anyone tries to send a multi-parameter
 //	request to the API, any parameters after method will be ignored
 	$request = explode (" ", $request);
+	foreach($request as $key => $value)
+	{
+	   if (in_array($value, array('true', 'false'))) $request[$key] = filter_var($request[$key], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+	}
 	
 //	These are security checks to ensure that no one uses the API
 //	to request balance data or mess up the wallet.

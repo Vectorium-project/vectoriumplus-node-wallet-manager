@@ -139,7 +139,8 @@
 		curl_setopt($coind, CURLOPT_POST, TRUE);
 	
 	//	Provide the JSON data for the request
-		curl_setopt($coind, CURLOPT_POSTFIELDS, $request); 
+		curl_setopt($coind, CURLOPT_POSTFIELDS, $request);
+		//print_r($request); 
 
 	//	Indicate we want the response as a string
 		curl_setopt($coind, CURLOPT_RETURNTRANSFER, TRUE);

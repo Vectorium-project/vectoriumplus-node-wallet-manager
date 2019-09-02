@@ -100,7 +100,16 @@
         </form>
 	<?php
 	if(isset($_POST['toggle_staking'])){ 
-	    echo "pressed";	   
+	    if($_POST['toggle_staking'] == "ENABLE STAKING"){
+		 $enable_it = "http://127.0.0.1/api.php?request=" . urlencode('staking true');
+		 file_get_contents_curl($enable_it);
+		 echo $_SERVER['PHP_SELF'];
+		 header('Location: '.$_SERVER['PHP_SELF']);
+		} else {
+		  $disable_it = "http://127.0.0.1/api.php?request=" . urlencode('staking false');
+		  file_get_contents_curl($disable_it);
+		  header('Location: '.$_SERVER['PHP_SELF']);
+		}
 	}
 	?>
 	<?php	
@@ -215,7 +224,7 @@
       <br>
       <h3>Last 10 wallet transactions</h3>
       <div id="txtable">
-	<table class="pure-table-striped pure-table-bordered sortable" style="margin: 0px auto">
+	<table class="tbl-txes pure-table-striped pure-table-bordered sortable" style="margin: 0px auto">
          <thead>
            <tr>             
              <th></th>
@@ -254,7 +263,7 @@
       </div>
       <h3>Connected Peers <span class="small">[<a id="peerslink" onclick="showHidePeers()" href="javascript:void(0);">Hide</a>]</span></h3>
       <div id="peerstable">
-      <table class="pure-table-striped pure-table-bordered sortable" style="margin: 0px auto">
+      <table class="tbl-peers pure-table-striped pure-table-bordered sortable" style="margin: 0px auto">
          <thead>
            <tr>
              <th>IP</th>

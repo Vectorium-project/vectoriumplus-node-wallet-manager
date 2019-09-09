@@ -30,7 +30,7 @@ case 'connection':
 case 'peer':
     $data_file  = $config['peercount_file'];
     $min_points = $config['peercount_min_data_points'];
-    $headers    = array('Date','Other','Classic','BitCoinJ','Core','Unlimited');
+    $headers    = array('Date','Other','Core');
     $prefixes   = array('new Date(','','','','','');
     $postfixes  = array('*1000)','','','','','');
 

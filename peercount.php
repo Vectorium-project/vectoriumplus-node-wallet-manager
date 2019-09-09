@@ -51,10 +51,7 @@ $new_peers = $bitcoin->getpeerinfo();
 
 // Default types
 $default_types = array(
-  'classic'  => 'Classic',
-  'bitcoinj' => 'BitcoinJ',
-  'core'     => 'Satoshi',
-  'unlimited'=> 'Unlimited'
+  'core'     => '/VectoriumPlus:2.7.0/'  
 );
 
 // If extra nodes are set, include them

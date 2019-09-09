@@ -137,14 +137,14 @@ $config = array(
   // Stats
   'stats_whitelist'           => array('127.0.0.1'),
   'stats_file'                => '/var/tmp/VectoriumPlusd-status.data',
-  'stats_max_age'             => '604800',
-  'stats_min_data_points'     => 5,
+  'stats_max_age'             => '259200',
+  'stats_min_data_points'     => 7,
 
   // Node Count
   'peercount_whitelist'       => array('127.0.0.1'),
   'peercount_file'            => '/var/tmp/VectoriumPlusd-peers.data',
-  'peercount_max_age'         => '2592000',
-  'peercount_min_data_points' => 10,
+  'peercount_max_age'         => '259200',
+  'peercount_min_data_points' => 7,
   'peercount_extra_nodes'     => array(),
 
   // Uptime

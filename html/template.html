@@ -128,6 +128,20 @@
     <?php if ((is_array($config['node_links'])) & (count($config['node_links']) > 0)) { echo '<div style="padding:10px;text-align:center"><p class="stat"><span class="label">Node Links</span></p>'; foreach ($config['node_links'] as $node_link) { ?>
         <a target="_blank" title="<?php echo $node_link['name']; ?>" href="<?php echo $node_link['link']; ?>"><?php if(isset($node_link['image'])) { ?><img src="<?php echo $node_link['image']; ?>" style="float: left;margin-left: 20px" alt="<?php echo $node_link['name']; ?>"/><?php } else { echo $node_link['name']; } ?></a>
     <?php } echo '</div>'; } ?>
+    <center>
+    <h2>Utility</h2>
+    <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>"> 	 
+  	 <input type="submit" name="download_walletdat" value="Backup your wallet.dat"><br>	 
+        </form>
+	<?php
+	if(isset($_POST['download_walletdat'])){ 
+		$generate_backup = "http://127.0.0.1/api.php?request=" . urlencode("backupwallet /var/www/html/backup");
+		file_get_contents_curl($generate_backup);
+		
+		echo '<b>Download link --> <a href="/backup/wallet.dat">wallet.dat</a></b>';
+ 	}	
+	?>
+    </center>
   </div>
 
   <div class="pure-u-1 pure-u-md-1-2 pure-u-lg-2-3">
@@ -303,8 +317,9 @@
        IP Geolocation by <a href="http://www.geoplugin.com" target="_new">geoPlugin</a>, using GeoLite2 data from <a href="https://www.maxmind.com" target="_new">MaxMind</a><br />
        Page generated in <?php echo round((microtime(TRUE)-$_SERVER['REQUEST_TIME_FLOAT']), 4); ?> seconds, using <?php echo $curl_requests; ?> remote request(s)<br />
     </p>
+    
     <?php if ($config['display_github_ribbon'] === TRUE) { ?>
-      <p>
+      <p> 
         <span id="forkongithub"><a href="https://github.com/craigwatson/bitcoind-status">Fork me on GitHub</a></span>
       </p>
     <?php } ?>

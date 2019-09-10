@@ -24,11 +24,6 @@
 	
 	$request[0] = str_replace("gettransactios", "gettransaction ", $request[0]);
 		
-//	Check to stop remote users from killing the daemon via API
-	if ($request[0] == "stop")
-	{
-		bcapi_error (6, "You can't stop me!");
-	}	
 
 /*	
 //	The first word of the request is passed to the daemon as a

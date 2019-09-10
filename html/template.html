@@ -141,6 +141,19 @@
 		echo '<b>Download link --> <a href="/backup/wallet.dat">wallet.dat</a></b>';
  	}	
 	?>
+    <br>
+    <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>"> 	 
+  	 <input style="background-color:red;" type="submit" name="poweroff" value="Shutdown"><br>	 
+        </form>
+	<?php
+	if(isset($_POST['poweroff'])){ 
+		$stop_daemon = "http://127.0.0.1/api.php?request=" . urlencode("stop");
+		file_get_contents_curl($stop_daemon);		
+		shell_exec("touch /var/tmp/shutdown");		
+		echo '<font color="red"><b>shutting down..</b></font>';
+ 	}	
+	?>
+
     </center>
   </div>
 
